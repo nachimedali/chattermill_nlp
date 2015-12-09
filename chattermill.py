@@ -62,13 +62,13 @@ def clean_comments(comments):
 	words = only_alphabet.lower().split()
 
 	# After cleaning our string, we can return the "cleaned" one
-	return ( "".join (words))
+	return (" ".join(words))
 
 
 if __name__ == '__main__':
 
     #This list would contain all lines cleaned from stopwords with lower letters and formed to train.
-    
+    test =""
     clean_train_comment = []
 	#This list initiated would contain 
     clean_test_comment = []
@@ -85,15 +85,16 @@ if __name__ == '__main__':
         # Something cool about data provided is that there is no punctuation, so this list contains comments already ready for
         #word2vec deep learning 
         
-            clean_train_comment.append(" ".join(clean_comments(line)))
+            clean_train_comment.append(clean_comments(line).split())
 
     # And we proceed with the same approach with the positive files
-    
+    #print clean_train_comment
 
-    with open(os.path.join(os.path.dirname(__file__), 'unsuperviserd_reviews.txt')) as fileobject:
+    with open(os.path.join(os.path.dirname(__file__), 'test.txt')) as fileobject:
         for line in fileobject:	
-            clean_test_comment.append(" ".join(clean_comments(line)))
+            clean_test_comment.append(clean_comments(line).split())
 
+    print clean_test_comment[0]
     # # Initiation of Word2Vec
     # Defining the model requires at the same time defininf 5 parameters:
     # workers reflects to how many threads should run in parallel, it is suggested to 4 threads
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     # min_count defines words that should be retained basingon the nbr of their repetition
     # window defines the context window size 
     # sample defines the setting for frequent word 
-    model = Word2Vec(clean_train_comment, workers=4, size= 400, min_count = 30, window = 10, sample = 1e-3, seed=1)
+    model = Word2Vec(clean_train_comment, workers=4, size= 400, min_count = 1, window = 10, sample = 1e-3, seed=1)
 
     #having the model trained, we call now the init_sims funtion
     model.init_sims(replace=True)
@@ -112,20 +113,23 @@ if __name__ == '__main__':
 
     ############        Ruunning some tests with the model ########################
     
-    # model.doesnt_match("morgan freeman brad frozen".split())
-
-    # model.most_similar("robin")
-
-
+    a = model.most_similar("bikini")
+    print a 
+		
     trainVecs = getAvgFeatureVecs( clean_train_comment, model, 400 )
 
     testVecs = getAvgFeatureVecs( clean_test_comment, model, 400 )
 
 
 	# Using scikit-learn forest classifier
+    z =[]
+    for i in xrange(0,1224):
+        z.append('0')
+    for i in xrange(1224,3070):
+        z.append('1')	
 
     forest = RandomForestClassifier( n_estimators = 100 )
-    forest = forest.fit( trainVecs, trainVecs["sentiment"] )
+    forest = forest.fit( trainVecs, z )
 
     # Generating results
     result = forest.predict( testVecs )
