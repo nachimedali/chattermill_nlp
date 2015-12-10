@@ -124,7 +124,7 @@ if __name__ == '__main__':
 	# Using scikit-learn forest classifier
     z =[]
     for i in xrange(0,1224):
-        z.append('0')
+        z.append('-1')
     for i in xrange(1224,3070):
         z.append('1')	
 
