@@ -133,7 +133,11 @@ if __name__ == '__main__':
 
     # Generating results
     result = forest.predict( testVecs )
-    print result
+    for r in result:
+        if r == '1':
+            print "positive comment"
+        else:
+            print "negative comment"
     # Write the test results
 
     # output = pandas.DataFrame( data={"sentiment":result} )
